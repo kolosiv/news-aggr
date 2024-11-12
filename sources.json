@@ -16,5 +16,11 @@
         "name": "dialectic",
         "type": "1",
         "created_ad": "2024-11-08T12:10:00Z"
+    },
+    {
+        "url": "https://www.onliner.by/feed",
+        "name": "onliner.by",
+        "type": "1",
+        "created_ad": "2024-11-08T12:10:00Z"
     }
 ]

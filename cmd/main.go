@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
+	"github.com/kolosiv/news-aggr/internal/api/rest"
 	"github.com/kolosiv/news-aggr/internal/api/telegram"
 	"github.com/kolosiv/news-aggr/internal/database"
 	"github.com/kolosiv/news-aggr/internal/parser"
@@ -24,6 +25,7 @@ func main() {
 
 	nr := repository.CreateNewsRepository(dbpool)
 	pc := parser.CreateParserController(nr)
+	rc := rest.CreateRestController(nr)
 
 	c := cron.New()
 	_, err = c.AddFunc("41 19 * * *", pc.MainParser)
@@ -34,6 +36,7 @@ func main() {
 	c.Start()
 
 	go telegram.TelegramBot(nr)
+	go rest.Setup(rc)
 
 	// pc.MainParser()
 
