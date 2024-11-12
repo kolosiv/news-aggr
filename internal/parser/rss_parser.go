@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/kolosiv/news-aggr/internal/repository"
@@ -13,7 +14,7 @@ func (pc *parserController) RssParser(rssURL string) {
 
 	feed, err := fp.ParseURL(rssURL)
 	if err != nil {
-		// log.("Ошибка при парсинге RSS ленты: %v", err)
+		log.Printf("Ошибка при парсинге RSS ленты %s: %v", rssURL, err)
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,6 +13,7 @@ import (
 type NewsRepository interface {
 	CreateNews(news []News) error
 	GetTodayNews() ([]News, error)
+	GetNewsByInterval(startDate time.Time, endtDate time.Time) ([]News, error)
 }
 
 type newsRepository struct {
@@ -20,6 +22,34 @@ type newsRepository struct {
 
 func CreateNewsRepository(db *pgxpool.Pool) NewsRepository {
 	return &newsRepository{db: db}
+}
+
+func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.Time) ([]News, error) {
+	query := `SELECT id, pub_date, title, description, link
+				FROM news
+				WHERE pub_date::date BETWEEN $1 AND $2;`
+
+	rows, err := nr.db.Query(context.Background(), query, startDate, endtDate)
+	if err != nil {
+		return nil, fmt.Errorf("error select process: %v", err)
+	}
+	defer rows.Close()
+
+	var newsList []News
+
+	for rows.Next() {
+		var news News
+		if err := rows.Scan(&news.ID, &news.PubDate, &news.Title, &news.Description, &news.Link); err != nil {
+			return nil, fmt.Errorf("error scan rows: %v", err)
+		}
+		newsList = append(newsList, news)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error row process: %v", err)
+	}
+
+	return newsList, nil
 }
 
 func (nr *newsRepository) CreateNews(news []News) error {

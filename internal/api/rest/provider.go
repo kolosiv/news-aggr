@@ -12,6 +12,7 @@ func Setup(rc RestController) {
 	// r.Use(middleware.Recoverer)
 	// r.Use(middleware.Timeout(timeout))
 
-	r.GET("/News", rc.GetNewsByDate)
+	r.GET("/news", rc.GetTodayNews)
+	r.GET("/news/interval", rc.GetNewsByInterval)
 	r.Run()
 }

@@ -1,25 +1,7 @@
 [
     {
-        "url": "https://devby.io/rss",
-        "name": "devby",
-        "type": "1",
-        "created_ad": "2024-11-08T12:10:00Z"
-    },
-    {
         "url": "https://myfin.by/rss",
         "name": "myfin",
-        "type": "1",
-        "created_ad": "2024-11-08T12:10:00Z"
-    },
-    {
-        "url": "https://dialectic.club/rss",
-        "name": "dialectic",
-        "type": "1",
-        "created_ad": "2024-11-08T12:10:00Z"
-    },
-    {
-        "url": "https://www.onliner.by/feed",
-        "name": "onliner.by",
         "type": "1",
         "created_ad": "2024-11-08T12:10:00Z"
     }
