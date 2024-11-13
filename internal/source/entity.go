@@ -3,8 +3,9 @@ package source
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Source struct {
@@ -17,14 +18,16 @@ type Source struct {
 func GetSources() []Source {
 	data, err := ioutil.ReadFile("sources.json")
 	if err != nil {
-		log.Fatalf("Error reading file: %v", err)
+		logrus.Error("Error reading file", err)
+		return nil
 	}
 
 	var sources []Source
 
 	err = json.Unmarshal(data, &sources)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		logrus.Error("Error decoding JSON", err)
+		return nil
 	}
 
 	return sources

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -74,7 +74,7 @@ func (nr *newsRepository) CreateNews(news []News) error {
 		return err
 	}
 
-	fmt.Printf("Successfully inserted %d rows.\n", copyCount)
+	logrus.Info("Successfully inserted rows." + strconv.FormatInt(copyCount, 10))
 
 	if row2ins != int(copyCount) {
 		logrus.Error("Rows missed")

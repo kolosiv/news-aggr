@@ -38,6 +38,7 @@ func (pc *parserController) RssParser(rssURL string) {
 	}
 
 	if len(news) < 1 {
+		logrus.Debug("No news on RSS feed: " + rssURL)
 		return
 	}
 

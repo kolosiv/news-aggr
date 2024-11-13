@@ -15,8 +15,7 @@ func main() {
 
 	logger.InitLogger()
 
-	err := godotenv.Load()
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		logrus.Fatal("Error loading .env file")
 	}
 
