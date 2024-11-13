@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"os"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kolosiv/news-aggr/internal/repository"
@@ -49,6 +50,7 @@ func TelegramBot(nr repository.NewsRepository) {
 							if _, err := bot.Send(msg); err != nil {
 								logrus.Error("error send th msg", err)
 							}
+							time.Sleep(1 * time.Second)
 						}
 					}
 				default:

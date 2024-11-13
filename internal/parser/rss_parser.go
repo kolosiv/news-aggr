@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (pc *parserController) RssParser(rssURL string) {
+func (pc *parserController) RssParser(rssURL string, sourceName string) {
 	fp := gofeed.NewParser()
 
 	feed, err := fp.ParseURL(rssURL)
@@ -33,6 +33,7 @@ func (pc *parserController) RssParser(rssURL string) {
 			article.Description = item.Description
 			article.Link = item.Link
 			article.PubDate = *item.PublishedParsed
+			article.SourceName = sourceName
 			news = append(news, article) //можно потом добавить указатель на слайс с помощью reflect
 		}
 	}

@@ -1,7 +1,13 @@
 [
     {
-        "url": "https://dialectic.club/rss",
-        "name": "dialectic",
+        "url": "https://devby.io/rss",
+        "name": "devby",
+        "type": "1",
+        "created_ad": "2024-11-08T12:10:00Z"
+    },
+    {
+        "url": "https://belta.by/rss/",
+        "name": "belta",
         "type": "1",
         "created_ad": "2024-11-08T12:10:00Z"
     }

@@ -25,7 +25,7 @@ func CreateNewsRepository(db *pgxpool.Pool) NewsRepository {
 }
 
 func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.Time) ([]News, error) {
-	query := `SELECT id, pub_date, title, description, link
+	query := `SELECT id, pub_date, title, description, link, source_name
 				FROM news
 				WHERE pub_date::date BETWEEN $1 AND $2;`
 
@@ -40,7 +40,8 @@ func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.T
 
 	for rows.Next() {
 		var news News
-		if err := rows.Scan(&news.ID, &news.PubDate, &news.Title, &news.Description, &news.Link); err != nil {
+		if err := rows.Scan(&news.ID, &news.PubDate, &news.Title,
+			&news.Description, &news.Link, &news.SourceName); err != nil {
 			logrus.Error("error select process", err)
 			return nil, err
 		}
@@ -61,12 +62,13 @@ func (nr *newsRepository) CreateNews(news []News) error {
 	row2ins := len(news)
 
 	for _, article := range news {
-		rows = append(rows, []interface{}{article.PubDate, article.Title, article.Description, article.Link})
+		rows = append(rows, []interface{}{article.PubDate, article.Title, article.Description,
+			article.Link, article.SourceName})
 	}
 
 	copyCount, err := nr.db.CopyFrom(context.Background(),
 		pgx.Identifier{"news"},
-		[]string{"pub_date", "title", "description", "link"},
+		[]string{"pub_date", "title", "description", "link", "source_name"},
 		pgx.CopyFromRows(rows),
 	)
 	if err != nil {
@@ -78,14 +80,14 @@ func (nr *newsRepository) CreateNews(news []News) error {
 
 	if row2ins != int(copyCount) {
 		logrus.Error("Rows missed")
-		return err
+		return nil
 	}
 
 	return nil
 }
 
 func (nr *newsRepository) GetTodayNews() ([]News, error) {
-	query := `SELECT id, pub_date, title, description, link
+	query := `SELECT id, pub_date, title, description, link, source_name
 				FROM news
 				WHERE pub_date::date = CURRENT_DATE`
 
@@ -100,7 +102,8 @@ func (nr *newsRepository) GetTodayNews() ([]News, error) {
 
 	for rows.Next() {
 		var news News
-		if err := rows.Scan(&news.ID, &news.PubDate, &news.Title, &news.Description, &news.Link); err != nil {
+		if err := rows.Scan(&news.ID, &news.PubDate, &news.Title,
+			&news.Description, &news.Link, &news.SourceName); err != nil {
 			logrus.Error("error scan rows", err)
 			return nil, err
 		}

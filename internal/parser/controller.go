@@ -6,7 +6,7 @@ import (
 )
 
 type ParserController interface {
-	RssParser(rssURL string)
+	RssParser(rssURL string, sourceName string)
 	MainParser()
 }
 
@@ -25,7 +25,7 @@ func (pc *parserController) MainParser() {
 	for _, source := range pc.sr {
 		switch source.Type {
 		case "1": //RSS
-			pc.RssParser(source.URL)
+			pc.RssParser(source.URL, source.Name)
 		}
 	}
 }
