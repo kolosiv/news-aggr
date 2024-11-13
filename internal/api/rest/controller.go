@@ -25,7 +25,6 @@ func (rc *restController) GetNewsByInterval(c *gin.Context) {
 	start := c.Query("start")
 	end := c.Query("end")
 
-	// Парсинг дат
 	layout := "2006-01-02"
 	startDate, err := time.Parse(layout, start)
 	if err != nil {
@@ -44,7 +43,6 @@ func (rc *restController) GetNewsByInterval(c *gin.Context) {
 		return
 	}
 
-	// Return the news as JSON
 	c.JSON(http.StatusOK, news)
 }
 

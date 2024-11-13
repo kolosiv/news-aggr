@@ -1,20 +1,23 @@
 package main
 
 import (
-	"log"
-
 	"github.com/joho/godotenv"
 	"github.com/kolosiv/news-aggr/internal/api/rest"
+	"github.com/kolosiv/news-aggr/internal/api/telegram"
 	"github.com/kolosiv/news-aggr/internal/database"
 	"github.com/kolosiv/news-aggr/internal/parser"
 	"github.com/kolosiv/news-aggr/internal/repository"
+	"github.com/kolosiv/news-aggr/pkg/logger"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
 
+	logger.InitLogger()
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		logrus.Fatal("Error loading .env file")
 	}
 
 	dbpool := database.ConnectPostgres()
@@ -33,7 +36,7 @@ func main() {
 	// }
 	// c.Start()
 
-	// go telegram.TelegramBot(nr)
+	go telegram.TelegramBot(nr)
 	go rest.Setup(rc)
 
 	select {}

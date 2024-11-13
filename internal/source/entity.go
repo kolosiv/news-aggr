@@ -15,16 +15,16 @@ type Source struct {
 }
 
 func GetSources() []Source {
-	data, err := ioutil.ReadFile("C:/Projects/Go/code/news-aggr/sources.json") // поменять начитку пути
+	data, err := ioutil.ReadFile("sources.json")
 	if err != nil {
-		log.Fatalf("Ошибка при чтении файла: %v", err)
+		log.Fatalf("Error reading file: %v", err)
 	}
 
 	var sources []Source
 
 	err = json.Unmarshal(data, &sources)
 	if err != nil {
-		log.Fatalf("Ошибка при декодировании JSON: %v", err)
+		log.Fatalf("Error decoding JSON: %v", err)
 	}
 
 	return sources

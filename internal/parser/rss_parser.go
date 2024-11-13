@@ -1,12 +1,11 @@
 package parser
 
 import (
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/kolosiv/news-aggr/internal/repository"
 	"github.com/mmcdole/gofeed"
+	"github.com/sirupsen/logrus"
 )
 
 func (pc *parserController) RssParser(rssURL string) {
@@ -14,9 +13,11 @@ func (pc *parserController) RssParser(rssURL string) {
 
 	feed, err := fp.ParseURL(rssURL)
 	if err != nil {
-		log.Printf("Ошибка при парсинге RSS ленты %s: %v", rssURL, err)
+		logrus.Error("Error parsing RSS feed: "+rssURL, err)
 		return
 	}
+
+	logrus.Debug("RSS feed parsed successfully: " + rssURL)
 
 	var (
 		news    []repository.News
@@ -25,7 +26,6 @@ func (pc *parserController) RssParser(rssURL string) {
 
 	now := time.Now()
 
-	fmt.Println("Заголовки новостей:")
 	for _, item := range feed.Items {
 		artpubl := *item.PublishedParsed
 		if artpubl.Year() == now.Year() && artpubl.Month() == now.Month() && artpubl.Day() == now.Day() {
@@ -41,7 +41,5 @@ func (pc *parserController) RssParser(rssURL string) {
 		return
 	}
 
-	if err = pc.nr.CreateNews(news); err != nil {
-		return
-	}
+	pc.nr.CreateNews(news)
 }

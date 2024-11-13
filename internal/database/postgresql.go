@@ -3,10 +3,10 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/sirupsen/logrus"
 )
 
 type DBConfig struct {
@@ -34,16 +34,16 @@ func ConnectPostgres() *pgxpool.Pool {
 
 	dbpool, err := pgxpool.New(ctx, connString)
 	if err != nil {
-		log.Fatalf("unable to connect to database: %v", err)
+		logrus.Fatalf("unable to connect to database: %v", err)
 		return nil
 	}
 
 	if err := dbpool.Ping(ctx); err != nil {
 		dbpool.Close()
-		log.Fatalf("unable to connect to database: %v", err)
+		logrus.Fatalf("unable to connect to database: %v", err)
 		return nil
 	}
 
-	fmt.Printf("Successfully connected to PostgreSQL!")
+	logrus.Info("Successfully connected to PostgreSQL!")
 	return dbpool
 }
