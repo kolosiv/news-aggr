@@ -42,7 +42,7 @@ func (pc *parserController) MainParser(stop <-chan struct{}) {
 				}
 			}
 			wg.Wait()
-			time.Sleep(5 * time.Second) //10 * time.Second) // начитывать из среды
+			time.Sleep(5 * time.Minute) // начитывать из среды
 		}
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
@@ -30,7 +31,8 @@ func ConnectPostgres() *pgxpool.Pool {
 	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DBName)
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
 
 	dbpool, err := pgxpool.New(ctx, connString)
 	if err != nil {

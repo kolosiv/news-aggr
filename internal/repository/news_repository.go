@@ -29,7 +29,9 @@ func CreateNewsRepository(db *pgxpool.Pool) NewsRepository {
 func (nr *newsRepository) NewsExists(newsItem News) (bool, error) {
 	var exists bool
 	query := `SELECT EXISTS (SELECT 1 FROM news WHERE link=$1)`
-	err := nr.db.QueryRow(context.Background(), query, newsItem.Link).Scan(&exists)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := nr.db.QueryRow(ctx, query, newsItem.Link).Scan(&exists)
 	if err != nil {
 		logrus.Error("failed to check if news exists", err)
 		return false, err
@@ -41,8 +43,9 @@ func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.T
 	query := `SELECT id, pub_date, title, description, link, source_name
 				FROM news
 				WHERE pub_date::date BETWEEN $1 AND $2;`
-
-	rows, err := nr.db.Query(context.Background(), query, startDate, endtDate)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	rows, err := nr.db.Query(ctx, query, startDate, endtDate)
 	if err != nil {
 		logrus.Error("error select process", err)
 		return nil, err
@@ -71,7 +74,9 @@ func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.T
 
 func (nr *newsRepository) CreateNewsItem(newsItem News) error {
 	query := `INSERT INTO news (title, link, description, pub_date, source_name) VALUES ($1, $2, $3, $4, $5)`
-	_, err := nr.db.Exec(context.Background(), query, newsItem.Title, newsItem.Link,
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := nr.db.Exec(ctx, query, newsItem.Title, newsItem.Link,
 		newsItem.Description, newsItem.PubDate, newsItem.SourceName)
 	if err != nil {
 		logrus.Error("failed to store news item", err)
@@ -92,7 +97,10 @@ func (nr *newsRepository) CreateNews(news []News) error {
 			article.Link, article.SourceName})
 	}
 
-	copyCount, err := nr.db.CopyFrom(context.Background(),
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	copyCount, err := nr.db.CopyFrom(ctx,
 		pgx.Identifier{"news"},
 		[]string{"pub_date", "title", "description", "link", "source_name"},
 		pgx.CopyFromRows(rows),
@@ -116,8 +124,9 @@ func (nr *newsRepository) GetTodayNews() ([]News, error) {
 	query := `SELECT id, pub_date, title, description, link, source_name
 				FROM news
 				WHERE pub_date::date = CURRENT_DATE`
-
-	rows, err := nr.db.Query(context.Background(), query)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	rows, err := nr.db.Query(ctx, query)
 	if err != nil {
 		logrus.Error("error select process", err)
 		return nil, err
