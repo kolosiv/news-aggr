@@ -1,6 +1,10 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/joho/godotenv"
 	"github.com/kolosiv/news-aggr/internal/api/rest"
 	"github.com/kolosiv/news-aggr/internal/api/telegram"
@@ -12,7 +16,6 @@ import (
 )
 
 func main() {
-
 	logger.InitLogger()
 
 	if err := godotenv.Load(); err != nil {
@@ -26,9 +29,41 @@ func main() {
 	pc := parser.CreateParserController(nr)
 	rc := rest.CreateRestController(nr)
 
-	go pc.MainParser()
-	go telegram.TelegramBot(nr)
-	go rest.Setup(rc)
+	stopParser := make(chan struct{})
+	stopTelegram := make(chan struct{})
+	stopRest := make(chan struct{})
 
-	select {}
+	doneParser := make(chan struct{})
+	doneTelegram := make(chan struct{})
+	doneRest := make(chan struct{})
+
+	go func() {
+		pc.MainParser(stopParser)
+		close(doneParser)
+	}()
+
+	go func() {
+		telegram.TelegramBot(nr, stopTelegram)
+		close(doneTelegram)
+	}()
+
+	go func() {
+		rest.Setup(rc, stopRest)
+		close(doneRest)
+	}()
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+
+	<-signalChan
+
+	close(stopParser)
+	close(stopTelegram)
+	close(stopRest)
+
+	<-doneParser
+	<-doneTelegram
+	<-doneRest
+
+	logrus.Println("All services stopped. Exiting.")
 }

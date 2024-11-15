@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func TelegramBot(nr repository.NewsRepository) {
+func TelegramBot(nr repository.NewsRepository, stop <-chan struct{}) {
 	botToken := os.Getenv("TG_BOT_TOKEN")
 
 	bot, err := tgbotapi.NewBotAPI(botToken)
@@ -30,9 +30,15 @@ func TelegramBot(nr repository.NewsRepository) {
 
 	updates := bot.GetUpdatesChan(u)
 
-	for update := range updates {
-		if update.Message != nil {
-			go handleUpdate(bot, nr, update)
+	for {
+		select {
+		case update := <-updates:
+			if update.Message != nil {
+				go handleUpdate(bot, nr, update)
+			}
+		case <-stop:
+			logrus.Println("Telegram bot stopped.")
+			return
 		}
 	}
 }

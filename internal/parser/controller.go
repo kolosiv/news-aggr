@@ -2,14 +2,16 @@ package parser
 
 import (
 	"sync"
+	"time"
 
 	repository "github.com/kolosiv/news-aggr/internal/repository"
 	"github.com/kolosiv/news-aggr/internal/source"
+	"github.com/sirupsen/logrus"
 )
 
 type ParserController interface {
 	rssParser(rssURL string, sourceName string, wg *sync.WaitGroup)
-	MainParser()
+	MainParser(stop <-chan struct{})
 	parseAndStoreRSS(rssURL string, sourceName string)
 }
 
@@ -24,14 +26,23 @@ func CreateParserController(nr repository.NewsRepository) ParserController {
 		sr: source.GetSources()}
 }
 
-func (pc *parserController) MainParser() {
-	var wg sync.WaitGroup
-	for _, source := range pc.sr {
-		wg.Add(1)
-		switch source.Type {
-		case "1": //RSS
-			go pc.rssParser(source.URL, source.Name, &wg)
+func (pc *parserController) MainParser(stop <-chan struct{}) {
+	for {
+		select {
+		case <-stop:
+			logrus.Println("Parser stopped.")
+			return
+		default:
+			var wg sync.WaitGroup
+			for _, source := range pc.sr {
+				wg.Add(1)
+				switch source.Type {
+				case "1": //RSS
+					go pc.rssParser(source.URL, source.Name, &wg)
+				}
+			}
+			wg.Wait()
+			time.Sleep(5 * time.Second) //10 * time.Second) // начитывать из среды
 		}
 	}
-	wg.Wait()
 }

@@ -2,23 +2,15 @@ package parser
 
 import (
 	"sync"
-	"time"
 
 	repository "github.com/kolosiv/news-aggr/internal/repository"
 	"github.com/mmcdole/gofeed"
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	checkInterval = 10 * time.Minute // начитывать из среды
-)
-
 func (pc *parserController) rssParser(rssURL string, sourceName string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for {
-		pc.parseAndStoreRSS(rssURL, sourceName)
-		time.Sleep(checkInterval)
-	}
+	pc.parseAndStoreRSS(rssURL, sourceName)
 }
 
 func (pc *parserController) parseAndStoreRSS(rssURL string, sourceName string) {
