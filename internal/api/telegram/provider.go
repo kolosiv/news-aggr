@@ -70,7 +70,7 @@ func groupNewsBySource(news []repository.News) map[string][]repository.News {
 
 func formatGroupedNews(sourceName string, news []repository.News) string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("**%s**\n", sourceName))
+	sb.WriteString(fmt.Sprintf("# %s\n", sourceName))
 	for _, n := range news {
 		sb.WriteString(fmt.Sprintf("[%s](%s)\nDescription: %s\n\n",
 			n.Title, n.Link, n.Description))
@@ -82,7 +82,7 @@ func sendGroupedNews(bot *tgbotapi.BotAPI, chatID int64, groupedNews map[string]
 	for sourceName, news := range groupedNews {
 		formattedNews := formatGroupedNews(sourceName, news)
 		sendLongMessage(bot, chatID, formattedNews)
-		time.Sleep(1 * time.Second) // Можно убрать или уменьшить задержку, если это необходимо
+		time.Sleep(1 * time.Second) // Можно убрать или уменьшить задержку
 	}
 }
 

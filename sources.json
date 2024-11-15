@@ -1,13 +1,13 @@
 [
     {
-        "url": "https://devby.io/rss",
-        "name": "DevBy",
+        "url": "https://myfin.by/rss",
+        "name": "MyFin",
         "type": "1",
         "created_ad": "2024-11-08T12:10:00Z"
     },
     {
-        "url": "https://myfin.by/rss",
-        "name": "MyFin",
+        "url": "https://devby.io/rss",
+        "name": "DevBy",
         "type": "1",
         "created_ad": "2024-11-08T12:10:00Z"
     }

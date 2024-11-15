@@ -1,13 +1,16 @@
 package parser
 
 import (
+	"sync"
+
 	repository "github.com/kolosiv/news-aggr/internal/repository"
 	"github.com/kolosiv/news-aggr/internal/source"
 )
 
 type ParserController interface {
-	RssParser(rssURL string, sourceName string)
+	rssParser(rssURL string, sourceName string, wg *sync.WaitGroup)
 	MainParser()
+	parseAndStoreRSS(rssURL string, sourceName string)
 }
 
 type parserController struct {
@@ -22,10 +25,13 @@ func CreateParserController(nr repository.NewsRepository) ParserController {
 }
 
 func (pc *parserController) MainParser() {
+	var wg sync.WaitGroup
 	for _, source := range pc.sr {
+		wg.Add(1)
 		switch source.Type {
 		case "1": //RSS
-			pc.RssParser(source.URL, source.Name)
+			go pc.rssParser(source.URL, source.Name, &wg)
 		}
 	}
+	wg.Wait()
 }

@@ -14,6 +14,8 @@ type NewsRepository interface {
 	CreateNews(news []News) error
 	GetTodayNews() ([]News, error)
 	GetNewsByInterval(startDate time.Time, endtDate time.Time) ([]News, error)
+	NewsExists(news News) (bool, error)
+	CreateNewsItem(newsItem News) error
 }
 
 type newsRepository struct {
@@ -22,6 +24,17 @@ type newsRepository struct {
 
 func CreateNewsRepository(db *pgxpool.Pool) NewsRepository {
 	return &newsRepository{db: db}
+}
+
+func (nr *newsRepository) NewsExists(newsItem News) (bool, error) {
+	var exists bool
+	query := `SELECT EXISTS (SELECT 1 FROM news WHERE link=$1)`
+	err := nr.db.QueryRow(context.Background(), query, newsItem.Link).Scan(&exists)
+	if err != nil {
+		logrus.Error("failed to check if news exists", err)
+		return false, err
+	}
+	return exists, err
 }
 
 func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.Time) ([]News, error) {
@@ -56,6 +69,19 @@ func (nr *newsRepository) GetNewsByInterval(startDate time.Time, endtDate time.T
 	return newsList, nil
 }
 
+func (nr *newsRepository) CreateNewsItem(newsItem News) error {
+	query := `INSERT INTO news (title, link, description, pub_date, source_name) VALUES ($1, $2, $3, $4, $5)`
+	_, err := nr.db.Exec(context.Background(), query, newsItem.Title, newsItem.Link,
+		newsItem.Description, newsItem.PubDate, newsItem.SourceName)
+	if err != nil {
+		logrus.Error("failed to store news item", err)
+		return err
+	} else {
+		logrus.Info("New news item stored: " + newsItem.Title)
+	}
+	return nil
+}
+
 func (nr *newsRepository) CreateNews(news []News) error {
 	var rows [][]interface{}
 
@@ -72,14 +98,14 @@ func (nr *newsRepository) CreateNews(news []News) error {
 		pgx.CopyFromRows(rows),
 	)
 	if err != nil {
-		logrus.Error("Failed to insert data with CopyFrom: ", err)
+		logrus.Error("failed to insert data with CopyFrom: ", err)
 		return err
 	}
 
 	logrus.Info("Successfully inserted rows." + strconv.FormatInt(copyCount, 10))
 
 	if row2ins != int(copyCount) {
-		logrus.Error("Rows missed")
+		logrus.Error("rows missed")
 		return nil
 	}
 
