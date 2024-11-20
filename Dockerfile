@@ -19,7 +19,8 @@ RUN mkdir -p /app/logs
 
 COPY --from=builder /app/myapp .
 COPY --from=builder /app/.env .  
-COPY --from=builder /app/sources.json .  
+COPY --from=builder /app/sources.json . 
+COPY --from=builder /app/internal/database/migrations /app/internal/database/migrations
 
 EXPOSE 8080
 
