@@ -31,14 +31,23 @@ func InitLogger() {
 	logFileName := filepath.Join("logs", time.Now().Format("2006-01-02_15-04-05")+"_errors.log")
 	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		logrus.Fatalf("Не удалось открыть файл для логирования: %v", err)
+		logrus.Fatalf("Failed to open file for logging: %v", err)
 	}
 
 	logrus.SetOutput(io.Discard)
 
+	var loglevel logrus.Level
+	mode := os.Getenv("APP_MODE")
+	switch mode {
+	case "debug":
+		loglevel = logrus.DebugLevel
+	default:
+		loglevel = logrus.InfoLevel
+	}
+
 	consoleLogger := logrus.New()
 	consoleLogger.SetOutput(os.Stdout)
-	consoleLogger.SetLevel(logrus.TraceLevel)
+	consoleLogger.SetLevel(loglevel)
 
 	logrus.AddHook(&LevelHook{
 		writer:    logFile,

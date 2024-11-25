@@ -51,23 +51,28 @@ func ConnectPostgres() *pgxpool.Pool {
 
 	logrus.Info("Successfully connected to PostgreSQL!")
 
-	migrateDir := "/app/internal/database/migrations"
+	var migrateDir string
+	if os.Getenv("APP_MODE") == "debug" {
+		migrateDir = "internal/database/migrations"
+	} else {
+		migrateDir = os.Getenv("MIGRATE_DIR")
+	}
 	if _, err := os.Stat(migrateDir); os.IsNotExist(err) {
-		logrus.Fatalf("Путь к миграциям не найден: %s", migrateDir)
+		logrus.Fatalf("Migration path not found: %s", migrateDir)
 	}
 
 	migrateURL := fmt.Sprintf("file://%s", migrateDir)
 	dbURL := fmt.Sprintf("%s?sslmode=disable", connString)
 	m, err := migrate.New(migrateURL, dbURL)
 	if err != nil {
-		logrus.Fatalf("Ошибка создания миграции: %v", err)
+		logrus.Fatalf("Error creating migration: %v", err)
 	}
 
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		logrus.Fatalf("Ошибка выполнения миграции: %v", err)
+		logrus.Fatalf("Error running migration: %v", err)
 	}
 
-	logrus.Info("Миграция успешно выполнена!")
+	logrus.Info("Migration completed successfully!")
 
 	return dbpool
 }

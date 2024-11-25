@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ func Setup(rc RestController, stop <-chan struct{}) {
 	r.GET("/news", rc.GetTodayNews)
 	r.GET("/news/interval/", rc.GetNewsByInterval)
 	srv := &http.Server{
-		Addr:    ":8080", //Начитывать из среды
+		Addr:    os.Getenv("REST_PORT"),
 		Handler: r,
 	}
 

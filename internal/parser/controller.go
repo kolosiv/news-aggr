@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -27,6 +29,10 @@ func CreateParserController(nr repository.NewsRepository) ParserController {
 }
 
 func (pc *parserController) MainParser(stop <-chan struct{}) {
+	psleep, err := strconv.ParseInt(os.Getenv("PARSER_SLEEP"), 10, 64)
+	if err != nil {
+		logrus.Fatalf("Parsed error, %v", err)
+	}
 	for {
 		select {
 		case <-stop:
@@ -42,7 +48,7 @@ func (pc *parserController) MainParser(stop <-chan struct{}) {
 				}
 			}
 			wg.Wait()
-			time.Sleep(5 * time.Minute) // начитывать из среды
+			time.Sleep(time.Duration(psleep) * time.Minute)
 		}
 	}
 }

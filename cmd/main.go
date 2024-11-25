@@ -5,7 +5,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/joho/godotenv"
 	"github.com/kolosiv/news-aggr/internal/api/rest"
 	"github.com/kolosiv/news-aggr/internal/api/telegram"
 	"github.com/kolosiv/news-aggr/internal/database"
@@ -16,11 +15,11 @@ import (
 )
 
 func main() {
-	logger.InitLogger()
+	// if err := godotenv.Load(); err != nil {
+	// 	logrus.Fatal("Error loading .env file")
+	// }
 
-	if err := godotenv.Load(); err != nil {
-		logrus.Fatal("Error loading .env file")
-	}
+	logger.InitLogger()
 
 	dbpool := database.ConnectPostgres()
 	defer dbpool.Close()
