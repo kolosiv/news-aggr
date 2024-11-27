@@ -4,7 +4,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/kolosiv/news-aggr/internal/api/rest"
 	"github.com/kolosiv/news-aggr/internal/api/telegram"
 	"github.com/kolosiv/news-aggr/internal/database"
@@ -15,9 +17,11 @@ import (
 )
 
 func main() {
-	// if err := godotenv.Load(); err != nil {
-	// 	logrus.Fatal("Error loading .env file")
-	// }
+	time.Sleep(1 * time.Minute)
+
+	if err := godotenv.Load(); err != nil {
+		logrus.Fatal("Error loading .env file")
+	}
 
 	logger.InitLogger()
 
