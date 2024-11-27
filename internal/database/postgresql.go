@@ -37,6 +37,7 @@ func ConnectPostgres() *pgxpool.Pool {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
+	logrus.Infof("Try to connect to database: %s", connString)
 	dbpool, err := pgxpool.New(ctx, connString)
 	if err != nil {
 		logrus.Fatalf("unable to connect to database: %v", err)
