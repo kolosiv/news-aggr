@@ -1,7 +1,3 @@
-Here's an updated version of the `README.md` file with information about the Telegram bot functionality:
-
----
-
 # News Aggregator
 
 News Aggregator is a Go-based application designed to collect and display news articles from various sources, along with a Telegram bot integration for delivering news directly to users.
