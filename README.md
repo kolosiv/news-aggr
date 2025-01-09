@@ -73,12 +73,4 @@ The news sources are defined in the `sources.json` file. Each entry should inclu
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-This project utilizes the following open-source tools and libraries:
-
-- [Go](https://golang.org/)
-- [Docker](https://www.docker.com/)
-- [Telegram Bot API](https://core.telegram.org/bots/api)
+This project is licensed under the MIT License.
