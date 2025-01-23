@@ -18,7 +18,7 @@ services:
     container_name: my_postgres_db
     environment:
       POSTGRES_USER: superuser
-      POSTGRES_PASSWORD: 29082002
+      POSTGRES_PASSWORD: 12657319
       POSTGRES_DB: news-aggr
     ports:
       - "5432:5432"
